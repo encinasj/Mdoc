@@ -1,0 +1,92 @@
+{% extends "admin/admin.html" %}
+
+{% block body %}
+  <h1>Registro de usuarios</h1>
+<div>
+    <form  method="POST">
+        <div>  
+            {{form.hidden_tag()}}
+            {{form.username}}
+            <br>
+            {{form.password}}
+        </div>
+        <br>
+        <p>
+            {{form.guardar()}}
+        </p>
+    </form>
+</div>
+<br>
+<br>
+<h1>Listade usuarios</h1>
+  <style>
+    table.greyGridTable {
+        border: 2px solid #FFFFFF;
+        width: 100%;
+        text-align: center;
+        border-collapse: collapse;
+      }
+      table.greyGridTable td, table.greyGridTable th {
+        border: 0px solid #FFFFFF;
+        padding: 3px 4px;
+      }
+      table.greyGridTable tbody td {
+        font-size: 13px;
+      }
+      table.greyGridTable td:nth-child(even) {
+        background: #EBEBEB;
+      }
+      table.greyGridTable thead {
+        background: #FFFFFF;
+        border-bottom: 2px solid #A4A4A4;
+      }
+      table.greyGridTable thead th {
+        font-size: 15px;
+        font-weight: bold;
+        color: #333333;
+        text-align: center;
+        border-left: 2px solid #A4A4A4;
+      }
+      table.greyGridTable thead th:first-child {
+        border-left: none;
+      }
+      
+      table.greyGridTable tfoot {
+        font-size: 14px;
+        font-weight: bold;
+        color: #333333;
+        background: #FFFFFF;
+        border-top: 2px solid #A4A4A4;
+      }
+      table.greyGridTable tfoot td {
+        font-size: 14px;
+      }
+  </style>
+
+<table class="greyGridTable">
+    <thead>
+        <tr>
+            <th>Usuarios</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if userslists %}
+            {% for userslist in userslists %}  
+                <tr>
+                    <td>{{userslist.username}}</td>
+                    <td>
+                        <a href="deluser/{{userslist.id}}"> 
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            {% else %}
+            <div class="alert warning"> 
+              <strong>No hay usuarios para presentar, favor de agregar!</strong>
+            </div>
+        {% endif %}
+    </tbody>
+</table>
+{% endblock body %}

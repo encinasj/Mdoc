@@ -1,0 +1,31 @@
+{% extends "admin/admin.html" %}
+
+{% block body %}
+  <h1>Tutoriales</h1>
+<form method="POST">
+  {{ form.csrf_token }}
+  <div class="form-group">
+    <input type="url" required name="url" 
+      placeholder="Agregar url" autocomplete="off">
+      
+    <input type="text" required name="name" 
+      placeholder="Agregar nombre" autocomplete="off" minlength="5">
+  </div>
+  <br>
+  <p>
+    {{ form.guardar() }}
+  </p>
+</form>
+<br>
+<hr>
+  {% for tuto in tutos  %}
+    <div class="card card-3">
+      <a href="/admin/eliminartuto/{{tuto.id}}" class="close">
+      </a>
+      <a href="{{tuto.url}}" target="_blank">
+        <img class="img" src="https://d28dhcwclph1gf.cloudfront.net/private/blog/videotutorial1479323094344.png" width="350" height="200" alt="video tutorial">
+      </a>
+      <h4>{{tuto.name}}</h4>
+    </div>
+  {% endfor %} 
+{% endblock body %}

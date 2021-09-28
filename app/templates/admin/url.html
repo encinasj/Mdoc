@@ -1,0 +1,35 @@
+{% extends "admin/admin.html" %}
+
+{% block body %}
+<form method="POST">
+  {{ form.csrf_token }}
+  <div class="form-group">
+    <input type="url" required name="url" placeholder="Agregar url" autocomplete="off"   minlength="5" maxlength="40"  >
+  </div>
+  <p>
+    {{form.guardar()}}
+  </p>
+</form>
+<br>
+<hr>
+<div class="alert info"> 
+  <strong>Actualizar enlace</strong>
+</div>
+<table>
+    <tbody>
+        {% for url_present in url_present %}
+          <tr>
+              <td>
+                <h4>{{url_present.url}}</h4>
+              </td>
+              <td>
+                <h5><-- Enlace actual</h5>
+              </td>
+              <td>
+                <a href="eliminarurl/{{url_present.id}}"><i class="fas fa-trash-alt"></i></a>
+              </td>
+          </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock body %}

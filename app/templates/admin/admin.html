@@ -1,0 +1,120 @@
+{% extends "index.html" %}
+
+{% block logo %}
+    <img src="{{ url_for('static', filename='img/video-conference.svg') }}" width="80px" alt="logo" />
+{% endblock logo %}
+
+{% block tutoriales %}
+  <div class="links">
+      <div class="icon">
+      <i class="fas fa-play-circle"></i>
+    </div>
+    <a href="{{url_for('admintutoriales')}}">
+      <span>Enlaces Tutoriales</span>
+    </a>
+  </div>
+{% endblock tutoriales %}
+
+{% block fondos %}
+  <div class="links">
+      <div class="icon">
+          <i class="fas fa-images"></i>
+      </div>
+      <a href="{{url_for('adminfondos')}}">
+        <span>subir fondos virtuales</span>
+      </a>
+  </div>
+{% endblock fondos %}
+
+{% block presentaciones %}
+  <div class="links">
+    <div class="icon">
+      <i class="fas fa-video"></i>
+    </div>
+    <a href="{{ url_for('admin')}}">
+      <span>presentaciones</span>
+    </a>
+  </div>
+{% endblock presentaciones %}
+
+{% block usuarios %}
+  <div class="links">
+    <div class="icon">
+      <i class="fas fa-user"></i>
+    </div>
+    <a href="{{url_for('adminusers')}}">
+      <span>Admin usuarios</span>
+    </a>
+  </div>
+{% endblock usuarios %}
+
+{% block contacto %}
+  <h1>pagina de administración</h1>
+{% endblock contacto %}
+
+{% block sugerencias %}
+  <div class="links" id="suggest">
+    <div class="icon">
+      <i class="fas fa-comment-alt"></i>
+    </div>
+    <a href="{{url_for('adminsugerencias')}}">
+      <span>ver sugerencias</span>
+    </a>
+  </div>
+{% endblock sugerencias %}
+
+{% block body %}
+<div>
+  <br>
+  <h1>Actualizar enlace de conexión </h1>
+  <a href="{{url_for('actualizarurls')}}">
+  <i class="fas fa-video">
+  </i> Actualizar
+</a>
+</div>
+<br>
+<div class="card card-body">
+  <br>
+  <form method="POST">
+    {{ form.csrf_token }}
+      <div class="form-group">
+        <input type="text" required name="recomendation" placeholder="Agregar recomendación" autocomplete="off"   minlength="5" maxlength="40"  >
+      </div>
+      <p>
+        {{form.enviar()}}
+      </p>
+  </form>
+  <div>
+  {% block sugerencias_usuario %}
+    <div class="grid-item two">
+      <h1 id="suggests">Sugerencias antes de ingresar</h1>
+      <table>
+          <tbody>
+            {% if presentations %}
+              {% for presentation in presentations %}
+                  <tr>
+                      <td>{{presentation.recomendation}}</td>
+                      <td>
+                        <a href="editar/{{presentation.id}}"> 
+                          <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                      <td>
+                          <a href="eliminar/{{presentation.id}}"> 
+                            <i class="fas fa-trash-alt"></i>
+                          </a>
+                      </td>
+                  </tr>
+              {% endfor %}
+            {% else %}
+              <div class="alert warning"> 
+                <strong>No hay recomendaciones, favor de agregar!</strong>
+              </div>
+            {% endif %}
+          </tbody>
+      </table>
+    </div>
+  {% endblock sugerencias_usuario %}
+  </div>
+</div>
+{% endblock body %}

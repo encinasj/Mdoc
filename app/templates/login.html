@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='img/360-degree.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css')}}">
+    <title>Login</title>
+</head>
+<body>
+    <div class="wrapper">
+        <form class="login" method="POST">
+            <p class="title">Log in</p>
+            {{form.hidden_tag()}}
+            {{form.username}}
+            {{form.password}}
+            {{form.ingresar}}
+        </form>
+    </div>
+</body>
+</html>

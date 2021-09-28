@@ -1,0 +1,21 @@
+{% extends "admin/admin.html" %}
+
+{% block body %}
+
+<div>
+  <hr>
+    <h1>Actualización de recomendación</h1>
+  </div>
+  <br>
+<form method="POST" GET='db.<int:id>'>
+    {{ form.csrf_token }}
+    <div class="form-group">
+        {{form.recomendation.label}}
+        <br>
+        {{form.recomendation}}
+    </div>
+    <p>
+        {{form.enviar()}}
+    </p>
+</form>
+{% endblock body %}

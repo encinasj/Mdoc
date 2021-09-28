@@ -1,0 +1,14 @@
+{% block sugerencias_usuario %}
+    <div class="grid-item two">
+        <h1 id="suggests">Sugerencias antes de ingresar</h1>
+        <table>
+            <tbody>
+                {% for presentation in presentations %}
+                    <tr>
+                        <td>{{presentation.recomendation}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock sugerencias_usuario %}

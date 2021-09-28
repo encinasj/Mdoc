@@ -5,73 +5,116 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ISEI</title>
-    <link rel="icon" href="360-degree.svg">
-    <link rel="stylesheet" href="index.css"/>
+    <link rel="icon" href="{{ url_for('static', filename='img/360-degree.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js" crossorigin="anonymous" ></script>
 </head>
 <body>
     <section id="sidebar">
         <section class="title-container">
-          <img src="video-conference.svg" width="80px" alt="logo" />
+          {% block logo %}            
+            <a href="{{ url_for('index')}}">
+              <img src="{{ url_for('static', filename='img/video-conference.svg') }}" width="80px" alt="logo" />
+            </a>
+          {% endblock logo %}
           <h1>MDOC</h1>
         </section>
         <section class="links-container">
+          {% block tutoriales %}
+            <div class="links">
+                <div class="icon">
+                <i class="fas fa-play-circle"></i>
+              </div>
+              <a href="{{url_for('tutoriales')}}">
+                <span>Tutoriales</span>
+              </a>
+            </div>
+          {% endblock tutoriales %}
+
+          {% block fondos %}
           <div class="links">
               <div class="icon">
-              <i class="fas fa-play-circle"></i>
+              <i class="fas fa-images"></i>
             </div>
-            <span>Tutoriales</span>
+            <a href="{{ url_for('fondos')}}">
+              <span>Fondos virtuales</span>
+            </a>
           </div>
-          <div class="links">
-            <div class="icon">
-            <i class="fas fa-images"></i>
-          </div>
-          <span>Fondos virtuales</span>
-        </div>
+        {% endblock fondos %}
+
+        {% block presentaciones %}
           <div class="links">
             <div class="icon">
               <i class="fas fa-video"></i>
             </div>
-            <span>Presentaciones</span>
+            <a href="{{ url_for('index')}}">
+              <span>Presentaciones</span>
+            </a>
           </div>
-          <div class="links" id="suggest">
+        {% endblock presentaciones %}
+
+        {% block usuarios %}
+        {% endblock usuarios %}
+
+        {% block sugerencias %}
+          <div class="links" id="suggest1">
             <div class="icon">
               <i class="fas fa-comment-alt"></i>
             </div>
-            <span>Sugerencias</span>
+            <a href="{{ url_for('sugerencias') }}">
+              <span>Sugerencias</span>
+            </a>
           </div>
+        {% endblock sugerencias %}
         </section>
+        
       </section>
       <section id="main-dashboard-content">
         <section id="top-section">
-          <div class="button-box">
-            <div class="support">
-                <span onclick="window.location.href='https://api.whatsapp.com/send?phone=+526622267620';">Soporte</span>
-                <i class="fas fa-question-circle"></i>
+          {% block contacto %}
+            <div class="button-box">
+              <div class="support">
+                  <span onclick="window.location.href='https://api.whatsapp.com/send?phone=+526622267620';">Soporte</span>
+                  <i class="fas fa-question-circle"></i>
+              </div>
+              <div class="asesor">
+                  <span onclick="window.location.href='https://api.whatsapp.com/send?phone=+526622297314';">Asesor</span>
+                  <i class="fas fa-user-tie"> </i>
+              </div>
             </div>
-            <div class="asesor">
-                <span onclick="window.location.href='https://api.whatsapp.com/send?phone=+526622297314';">Asesor</span>
-                <i class="fas fa-user-tie"> </i>
-            </div>
-          </div>
+          {% endblock contacto %}
             <div class="action-icons">
                 <div class="action-icon-one">
                     <i class="fas fa-user"></i>
                     <div class="dropdown-content">
+                      <a href="{{url_for('login')}}">
                         <p>Salir</p>
+                      </a>
                     </div>
                 </div>
             </div>
         </section>
+        {% block body %}
         <h1 id="welcome-title">Presentacion de grado</h1>
         <section id="grid-container">
             <div class="grid-item one">
-               <img class="img" src="https://getvoip.com/uploads/video-call.jpg" alt="video call">
+                
+              {% if urls_p != urls_p %}
+                  <img class="img" src="https://getvoip.com/uploads/video-call.jpg" alt="video call" >
+              {% else %}
+                {% for urls_p in urls_p %}                
+                  <a href="{{urls_p.url}}" target="_blank">
+                    <img class="img" src="https://getvoip.com/uploads/video-call.jpg" alt="video call" >
+                  </a>
+                {% endfor %}
+              {% endif %}
+                
             </div>
-          <div class="grid-item two">
-              <h1 id="suggests">Sugerencias antes de ingresar</h1>
-          </div>
+            {% block sugerencias_usuario %}
+              {% include "sugerencias_usuario.html" %}
+            {% endblock sugerencias_usuario %}
         </section>
+        {% endblock %}
       </section>
 </body>
 <footer>
