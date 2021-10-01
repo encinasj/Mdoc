@@ -9,6 +9,8 @@
             {{form.username}}
             <br>
             {{form.password}}
+            <br>
+            {{form.admin}}<h6>crear admin</h6>
         </div>
         <br>
         <p>
@@ -73,8 +75,12 @@
     <tbody>
         {% if userslists %}
             {% for userslist in userslists %}  
-                <tr>
-                    <td>{{userslist.username}}</td>
+                <tr>                        
+              
+                    <td>
+                      <i class="fas fa-user-cog"></i>
+                      {{userslist.username}}
+                    </td>
                     <td>
                         <a href="deluser/{{userslist.id}}"> 
                             <i class="fas fa-trash-alt"></i>

@@ -52,6 +52,20 @@
   <h1>pagina de administración</h1>
 {% endblock contacto %}
 
+{% block login %}
+<div class="action-icons">
+    <div class="action-icon-one">
+      <i class="fas fa-user"></i>
+      <div class="dropdown-content">
+        <a href="{{url_for('login')}}">
+          <p>Salir</p>
+        </a>
+      </div>
+    </div>
+</div>
+{% endblock login %}
+
+
 {% block sugerencias %}
   <div class="links" id="suggest">
     <div class="icon">
@@ -78,7 +92,7 @@
   <form method="POST">
     {{ form.csrf_token }}
       <div class="form-group">
-        <input type="text" required name="recomendation" placeholder="Agregar recomendación" autocomplete="off"   minlength="5" maxlength="40"  >
+        <input type="text" required name="recomendation" placeholder="Agregar recomendación" autocomplete="off"   minlength="5" maxlength="40">
       </div>
       <p>
         {{form.enviar()}}

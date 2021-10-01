@@ -1,13 +1,18 @@
 {% extends "index.html" %}
 
 {% block contacto %}
-  <h1>Sugerencias</h1>
+  <h1></h1>
 {% endblock contacto %}
 
 {% block body %}
     <h1>Porfavor mandanos tus suferencias</h1>
-    <form action="">
-        <textarea name="" id="" cols="30" rows="10" autocomplete="off" ></textarea>
-        <button>enviar</button>
+    <br>
+    <form method="POST">
+      {{ form.csrf_token }}
+        <textarea name="sugerencia" required  autocomplete="off" 
+                  placeholder="Sugerencia" cols="80" rows="10" 
+                  autocomplete="off"></textarea>
+        <br>
+        {{form.enviar()}}
     </form>
 {% endblock %}

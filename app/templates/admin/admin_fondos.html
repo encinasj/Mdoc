@@ -7,18 +7,6 @@
 {% block body %}
 <h1> Sube los fondos para las presentaciones</h1>
 
-<p>
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <ul>
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
-</p>
-
 <form  action="/admin/fondos" method="POST" enctype="multipart/form-data"> 
   <input type="file" name="image" id="image" autocomplete="off" required/>
   <br>

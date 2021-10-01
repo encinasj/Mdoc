@@ -2,8 +2,7 @@
 
 {% block body %}
     <h1>Sugerencias</h1>
-    <!-- CSS Code: Place this code in the document's head (between the <head> -- </head> tags) -->
-<style>
+    <style>
     table.customTable {
       width: 100%;
       background-color: #FFFFFF;
@@ -26,20 +25,19 @@
     }
     </style>
     
-    <!-- HTML Code: Place this code in the document's body (between the <body> tags) where the table should appear -->
-    <table class="customTable">
-      <thead>
-        <tr>
-          <th>Usuario</th>
-          <th>Sugerencia</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Row 1, Cell 1</td>
-          <td>Row 1, Cell 2</td>
-        </tr>
-      </tbody>
-    </table>
+<table class="customTable">
+  <thead>
+    <tr>
+      <th>Sugerencia</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for sugess in sugess %}
+      <tr>
+        <td>{{sugess.sugerencia}}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 {% endblock %}

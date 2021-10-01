@@ -1,27 +1,51 @@
-from datetime import datetime
 import os
-from os import path, remove
-
-from flask import Flask, render_template, request, url_for, redirect, flash, json
-from flask.globals import session
-
-#libreria para migraciones
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-#library forms
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField
-from wtforms.validators import DataRequired, InputRequired, Length, ValidationError
-from werkzeug.utils import secure_filename
+from os import urandom
+from flask import Flask
+from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
+from datetime import timedelta
+from flask_migrate import Migrate
+from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import bcrypt
+from flask_login import UserMixin
 
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, PasswordField, BooleanField
+from wtforms.validators import DataRequired, InputRequired, Length, ValidationError
+
+
+import os
+from flask import app, render_template, request, url_for, redirect, flash
+from flask.globals import session
+from flask_bcrypt import bcrypt
+#libreria para migraciones
+from flask_login import login_user, login_required, logout_user
+#library forms
+from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = 'static/uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 
+
 app = Flask(__name__)
+
+db = SQLAlchemy(app)
+app.secret_key = urandom(24)
+bcrypt = Bcrypt(app)
+migrate = Migrate()
+migrate.init_app(app, db)
+login_manager=LoginManager()
+login_manager.init_app(app)
+login_manager.login_view="login"
+app.permanent_session_lifetime  = timedelta(minutes=5)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
 #se infica cual es la url que usara para la conexion a la base de datos
 #credenciales de conecction 
 db_user = 'postgres'
@@ -33,25 +57,10 @@ full_url_db = f'postgresql://{db_user}:{db_pswd}@{db_host}:{db_port}/{db_name}'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = full_url_db
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ALLOWED_IMAGE_EXTENTIONS'] = ALLOWED_EXTENSIONS
 
-db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
-migrate = Migrate()
-migrate.init_app(app, db)
-
-login_manager=LoginManager()
-login_manager.init_app(app)
-login_manager.login_view="login"
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-app.secret_key = b'sdsfderfwe@#$g56u7j~3@$*^>,><>|\xf0\x9fR\xa1\xa8./?|'
-
+ 
 #tablas db
 class Urlpresentaciones(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -85,35 +94,65 @@ class Tutoriales(db.Model):
             f'name:{self.name} '
         )
 
-#forms tutoriales
-class TutorialesForm(FlaskForm):
-    url = StringField('url', validators=[DataRequired()])
-    name = StringField('name', validators=[DataRequired()])
-    guardar = SubmitField('guardar')
-    
 #tables users
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(250), nullable=False, unique=True)
     password = db.Column(db.String(250), nullable=False)
-    
+    admin = db.Column(db.Boolean, default=False)    
+   
     def set_password(self, password):
         """Set password."""
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+    
+    # Flask-Login integration
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
+
+    def is_admin(self):
+        return self.admin
+
+class Sugerencias(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sugerencia = db.Column(db.VARCHAR(200), nullable=False)
+    
+    def __str__(self):
+        return(
+            f'id: {self.id}, '
+            f'sugerencia: {self.sugerencia}, '
+        )
+
+
+#forms sugerencia
+class SugerenciaForm(FlaskForm):
+    sugerencia = StringField('sugerencia', validators=[DataRequired()])
+    enviar = SubmitField('enviar')
 
 #forms Users
 class RegisterForm(FlaskForm):
     username = StringField(validators=[InputRequired(), Length( min=4, max=20)], render_kw={
         "Placeholder": "Username",
         })
+    
     password = PasswordField(validators=[InputRequired(), Length( min=4, max=20)], render_kw={
         "Placeholder": "Password",
         })
+    
+    admin = BooleanField()
+    
     guardar = SubmitField('guardar')
     
     def validate_username(self, username):
-        existing_user_username = User.query.filter_by(
-            username=username.data).first()
+        existing_user_username = User.query.filter_by(username=username.data).first()
         
         if existing_user_username:
             raise ValidationError("Ese usuario ya esta registrado, favor de elegir otro.")
@@ -128,6 +167,12 @@ class LogInForm(FlaskForm):
         })
     ingresar = SubmitField('ingresar')
 
+#forms tutoriales
+class TutorialesForm(FlaskForm):
+    url = StringField('url', validators=[DataRequired()])
+    name = StringField('name', validators=[DataRequired()])
+    guardar = SubmitField('guardar')
+
 #forms urls
 class UrlsForm(FlaskForm):
     url = StringField('url', validators=[DataRequired()])
@@ -139,6 +184,8 @@ class PresentationForm(FlaskForm):
     enviar = SubmitField('enviar')
 
 
+
+
 @app.route("/")
 def index():
     presentations = RecomendationPresent.query.all()
@@ -147,18 +194,30 @@ def index():
 
 @app.route("/tutoriales")
 def tutoriales():
-    return render_template('tutoriales.html')
+    tutos = Tutoriales.query.order_by('id')
+    return render_template('tutoriales.html', tutos=tutos)
 
 @app.route("/fondos")
 def fondos():
     image_names = os.listdir(app.config["UPLOAD_FOLDER"])
     return render_template('fondos.html', image_names=image_names)
-@app.route("/sugerencias")
+
+@app.route("/sugerencias", methods=['GET', 'POST'])
 def sugerencias():
-    return render_template('sugerencias.html')
+    suges = Sugerencias()
+    sugesform = SugerenciaForm(obj=suges)
+    if request.method == 'POST':
+        if sugesform.validate_on_submit():
+           sugesform.populate_obj(suges)
+           db.session.add(suges)
+           db.session.commit()
+           flash('Gracias por sus sugerencias')
+        return redirect(request.url)
+    return render_template('sugerencias.html', form=sugesform)
 
 #apartado admin
 @app.route("/admin",methods=['GET','POST'])
+@login_required
 def admin():
     presentations = RecomendationPresent.query.order_by('id')
     present = RecomendationPresent()
@@ -264,14 +323,13 @@ def adminfondos():
 def defeletefondos():
     import json
     imagages = os.listdir(app.config["UPLOAD_FOLDER"])
-    y = json.loads("imagages")
-    print(y)
     return render_template('admin/delete_fondos.html', imagages=imagages)    
 
 @app.route('/admin/sugerencias')
 @login_required
 def adminsugerencias():
-    return render_template('admin/admin_sugerencias.html')
+    sugess = Sugerencias.query.all()
+    return render_template('admin/admin_sugerencias.html', sugess=sugess)
 
 #fin apartado admin
 @app.errorhandler(404)
@@ -307,7 +365,8 @@ def login():
         if user and bcrypt.check_password_hash(user.password.encode('utf8'), form.password.data):
                 flash("you login!")
                 login_user(user)
-                return redirect(url_for('index'))
+                session.permanent = True
+                return redirect(url_for('admin'))
         else:
             flash('Invalid Username and Password')
     return render_template('login.html', form=form)
@@ -318,6 +377,7 @@ def logout():
     logout_user()
     session.clear()
     return redirect(url_for('login'))
+
 
 if __name__ == "__main__":
     app.run(debug=True)

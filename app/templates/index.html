@@ -83,22 +83,13 @@
               </div>
             </div>
           {% endblock contacto %}
-            <div class="action-icons">
-                <div class="action-icon-one">
-                    <i class="fas fa-user"></i>
-                    <div class="dropdown-content">
-                      <a href="{{url_for('login')}}">
-                        <p>Salir</p>
-                      </a>
-                    </div>
-                </div>
-            </div>
+          {% block login %}
+          {% endblock login %}
         </section>
         {% block body %}
         <h1 id="welcome-title">Presentacion de grado</h1>
         <section id="grid-container">
             <div class="grid-item one">
-                
               {% if urls_p != urls_p %}
                   <img class="img" src="https://getvoip.com/uploads/video-call.jpg" alt="video call" >
               {% else %}

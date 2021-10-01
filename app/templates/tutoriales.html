@@ -1,5 +1,18 @@
 {% extends "index.html" %}
 
 {% block body %}
-  <h1>aqui va la lista de video tutoriales</h1>
+<br>
+<br>
+  {% for tuto in tutos  %}
+    <div class="card card-3">
+      {% if admin %}
+        <a href="/admin/eliminartuto/{{tuto.id}}" class="close">
+      {% endif %}
+      </a>
+      <a href="{{tuto.url}}" target="_blank">
+        <img class="img" src="https://d28dhcwclph1gf.cloudfront.net/private/blog/videotutorial1479323094344.png" width="350" height="200" alt="video tutorial">
+      </a>
+      <h4>{{tuto.name}}</h4>
+    </div>
+  {% endfor %}
 {% endblock body %}
