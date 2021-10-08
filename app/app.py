@@ -30,21 +30,16 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 
 app = Flask(__name__)
-
 db = SQLAlchemy(app)
 app.secret_key = urandom(24)
 bcrypt = Bcrypt(app)
 migrate = Migrate()
+
 migrate.init_app(app, db)
 login_manager=LoginManager()
 login_manager.init_app(app)
 login_manager.login_view="login"
 app.permanent_session_lifetime  = timedelta(minutes=5)
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
 
 #se infica cual es la url que usara para la conexion a la base de datos
 #credenciales de conecction 
@@ -55,11 +50,16 @@ db_name = 'mdoc'
 db_port = 5432
 full_url_db = f'postgresql://{db_user}:{db_pswd}@{db_host}:{db_port}/{db_name}'
 
+
 app.config['SQLALCHEMY_DATABASE_URI'] = full_url_db
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ALLOWED_IMAGE_EXTENTIONS'] = ALLOWED_EXTENSIONS
 
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
  
 #tablas db
 class Urlpresentaciones(db.Model):
