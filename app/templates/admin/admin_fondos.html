@@ -22,10 +22,8 @@
 <div>
 {% for fondos in fondos %}
   <div class="card card-3">
-    {% if admin %}
       <a href="/admin/eliminarfondo/{{fondos.id}}" class="close">
-    {% endif %}
-    </a>
+      </a>
     <img src="{{fondos.url}}" width="350" height="200" alt="img fondo">
   </div>
 {% endfor %}

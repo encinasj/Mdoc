@@ -250,7 +250,6 @@ body {
   transform: rotate(-45deg);
 }
 
-
 /*======================
     404 page
 =======================*/
@@ -310,8 +309,39 @@ body {
   0 6px 6px rgba(0,0,0,0.23);
 }
 
-
-
 /*======================
     Dark mode
 =======================*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.container .btn {
+  position: absolute;;
+  transform: translate(-110%, -9%);
+  -ms-transform: translate(50%, 50%);
+  background-color: #2196F3;
+  color: black;
+  font-size: 16px;
+  padding: 10px 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  text-align: center;
+
+}
+
+.container .btn:hover {
+  background-color: rgb(0, 110, 255);
+  color: rgb(255, 255, 255);
+}
