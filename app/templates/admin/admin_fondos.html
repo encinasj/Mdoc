@@ -7,21 +7,31 @@
 {% block body %}
 <h1> Sube los fondos para las presentaciones</h1>
 
-<form  action="/admin/fondos" method="POST" enctype="multipart/form-data"> 
-  <input type="file" name="image" id="image" autocomplete="off" required/>
-  <br>
-  <br>
-  <button type="submit" class="btn btn-primary">guardar imagen</button>
+<form method="POST">
+  {{ form.csrf_token }}
+  <div class="form-group">
+    <input type="url" required name="url" placeholder="Agregar url" autocomplete="off"  minlength="5">
+  </div>
+  <p>
+    {{form.guardar()}}
+  </p>
 </form>
-
 <br>
 <hr>
 <br>
-
 <div>
-  {% for name in image_names %}
-    <img src="{{ url_for('static', filename='uploads/' + name) }}" width="200" height="200">
-  {% endfor %}
+{% for fondos in fondos %}
+  <div class="card card-3">
+    <a href="/admin/eliminarfondo/{{fondos.id}}" class="close">
+    </a>
+    <img src="{{fondos.url}}" width="350" height="200" alt="img fondo">
+  </div>
+{% endfor %}
 </div>
+
+
+
+
+
 
 {% endblock body %}

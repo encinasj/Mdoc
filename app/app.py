@@ -24,6 +24,7 @@ from flask_login import login_user, login_required, logout_user
 #library forms
 from werkzeug.utils import secure_filename
 
+
 UPLOAD_FOLDER = 'static/uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
@@ -48,11 +49,18 @@ db_pswd = 'phyla'
 db_host = '127.0.0.1'
 db_name = 'mdoc'
 db_port = 5432
-full_url_db = f'postgresql://{db_user}:{db_pswd}@{db_host}:{db_port}/{db_name}'
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = full_url_db
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+ENV = 'dev'
+
+if ENV == 'dev':
+    app.debug = True
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:phyla@127.0.0.1:5432/mdoc'
+else:
+    app.debug = False
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://qvwbtqyblaxsbp:06d6378d72b9088edd1e8b88797ffe6ddd02a634b95fa4abe91925bdd5cd27dc@ec2-54-204-148-110.compute-1.amazonaws.com:5432/dbno3c6rrs95vc'
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ALLOWED_IMAGE_EXTENTIONS'] = ALLOWED_EXTENSIONS
 
@@ -65,6 +73,16 @@ def load_user(user_id):
 class Urlpresentaciones(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.VARCHAR(100), nullable=False)
+
+    def __str__(self):
+        return (
+            f'id: {self.id}, '
+            f'url: {self.url}'
+        )
+        
+class Urlfondos(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.VARCHAR(255), nullable=False)
 
     def __str__(self):
         return (
@@ -131,6 +149,10 @@ class Sugerencias(db.Model):
             f'sugerencia: {self.sugerencia}, '
         )
 
+#forms fondos
+class FondosForm(FlaskForm):
+    url = StringField('url', validators=[DataRequired()])
+    guardar = SubmitField('guardar')
 
 #forms sugerencia
 class SugerenciaForm(FlaskForm):
@@ -183,10 +205,7 @@ class PresentationForm(FlaskForm):
     recomendation = StringField('recomendation', validators=[DataRequired()])
     enviar = SubmitField('enviar')
 
-
-
-
-@app.route("/")
+@app.route("/", methods=['GET'])
 def index():
     presentations = RecomendationPresent.query.all()
     urls_p = Urlpresentaciones.query.all()
@@ -197,10 +216,10 @@ def tutoriales():
     tutos = Tutoriales.query.order_by('id')
     return render_template('tutoriales.html', tutos=tutos)
 
-@app.route("/fondos")
+@app.route("/fondos",  methods=['GET'])
 def fondos():
-    image_names = os.listdir(app.config["UPLOAD_FOLDER"])
-    return render_template('fondos.html', image_names=image_names)
+    url_fondos = Urlfondos.query.order_by('id')
+    return render_template('fondos.html', url_fondos=url_fondos)
 
 @app.route("/sugerencias", methods=['GET', 'POST'])
 def sugerencias():
@@ -302,28 +321,24 @@ def allowed_image(filename):
 @app.route('/admin/fondos', methods=['GET', 'POST'])
 @login_required
 def adminfondos():
-    if request.method == "POST":
-        if request.files:
-            image = request.files["image"]
-            if image.filename == "":
-                flash('No selecciono imagen')
-                return redirect(request.url)
-            if not allowed_image(image.filename):
-                flash('Se guardo correctamente la imagen')
-                return redirect(request.url)
-            else:
-                filename = secure_filename(image.filename)
-                image.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-        return redirect(request.url)
-    image_names = os.listdir(app.config["UPLOAD_FOLDER"])
-    return render_template('admin/admin_fondos.html', image_names=image_names)
+    fondos = Urlfondos.query.order_by('id')
+    url_fondos = Urlfondos()
+    UrlForm = UrlsForm(obj=url_fondos)
+    if request.method == 'POST':
+        if UrlForm.validate_on_submit():
+            UrlForm.populate_obj(url_fondos)
+            db.session.add(url_fondos)
+            db.session.commit()
+            return redirect(url_for('adminfondos'))
+    return render_template('admin/admin_fondos.html', fondos=fondos, form=UrlForm)
 
-@app.route('/delete/fondos', methods=['GET'])
+@app.route('/admin/eliminarfondo/<int:id>')
 @login_required
-def defeletefondos():
-    import json
-    imagages = os.listdir(app.config["UPLOAD_FOLDER"])
-    return render_template('admin/delete_fondos.html', imagages=imagages)    
+def defeletefondos(id):
+    fondo = Urlfondos.query.get_or_404(id)
+    db.session.delete(fondo)
+    db.session.commit()
+    return redirect(url_for('adminfondos'))    
 
 @app.route('/admin/sugerencias')
 @login_required
@@ -380,5 +395,5 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=8000 ,debug=True)
     

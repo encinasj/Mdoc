@@ -1,17 +1,16 @@
 {% extends "index.html" %}
 
 {% block contacto %}
-  <h1>backgrounds</h1>
+<h1>Selecciona el que más te guste</h1>
 {% endblock contacto %}
 
 {% block body %}
-  <h1>elige el que más te guste</h1>
-
+  
   <br>
 
 <div>
-  {% for name in image_names %}
-    <img src="{{ url_for('static', filename='uploads/' + name) }}" width="200" height="200">
+  {% for url_fondos in url_fondos %}
+    <img src="{{url_fondos.url}}" width="200" height="200">
   {% endfor %}
 </div>
 
