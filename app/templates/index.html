@@ -52,7 +52,18 @@
             </a>
           </div>
         {% endblock presentaciones %}
-
+        
+        {% block documentos %}
+          <div class="links">
+            <div class="icon">
+              <i class="fas fa-folder-open"></i>
+            </div>
+            <a href="{{ url_for('documentos')}}">
+              <span>Documentos</span>
+            </a>
+          </div>
+        {% endblock documentos %}
+        
         {% block usuarios %}
         {% endblock usuarios %}
 
@@ -84,8 +95,13 @@
             </div>
           {% endblock contacto %}
           {% block login %}
-
-              
+            <div class="action-icons">
+              <div class="action-icon-one">
+                <a href="{{url_for('login')}}">
+                  <i class="fas fa-user"></i>
+                </a>
+              </div>
+            </div>
           {% endblock login %}
         </section>
         {% block body %}
@@ -110,7 +126,4 @@
         {% endblock %}
       </section>
 </body>
-<footer>
-
-</footer>
 </html>

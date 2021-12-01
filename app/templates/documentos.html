@@ -1,0 +1,21 @@
+{% extends "index.html" %}
+
+{% block contacto %}
+  <h1>Documentos</h1>
+{% endblock contacto %}
+
+{% block body %}
+<hr>
+{% for docsurl in docsurl %}
+  <div class="card ">
+    {% if admin %}
+      <a href="/admin/eliminardoc/{{docsurl.id}}" class="close">
+    {% endif %}
+    </a>
+    <a href="{{docsurl.url}}" target="_blank">
+      <img class="img" src="https://cdn1.iconfinder.com/data/icons/free-colorful-icons/360/google_docs.png" width="100" height="100" alt="docs">
+    </a>
+    <h4>{{docsurl.name}}</h4>
+  </div>
+{% endfor %}
+{% endblock body %}

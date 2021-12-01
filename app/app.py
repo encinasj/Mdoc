@@ -22,11 +22,7 @@ from flask_bcrypt import bcrypt
 #libreria para migraciones
 from flask_login import login_user, login_required, logout_user
 #library forms
-from werkzeug.utils import secure_filename
 
-
-UPLOAD_FOLDER = 'static/uploads/'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 
 
@@ -40,7 +36,6 @@ migrate.init_app(app, db)
 login_manager=LoginManager()
 login_manager.init_app(app)
 login_manager.login_view="login"
-app.permanent_session_lifetime  = timedelta(minutes=5)
 
 #se infica cual es la url que usara para la conexion a la base de datos
 #credenciales de conecction 
@@ -61,9 +56,6 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://qvwbtqyblaxsbp:06d6378d72b9088edd1e8b88797ffe6ddd02a634b95fa4abe91925bdd5cd27dc@ec2-54-204-148-110.compute-1.amazonaws.com:5432/dbno3c6rrs95vc'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['ALLOWED_IMAGE_EXTENTIONS'] = ALLOWED_EXTENSIONS
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -89,6 +81,18 @@ class Urlfondos(db.Model):
             f'id: {self.id}, '
             f'url: {self.url}'
         )
+        
+class Documentsurl(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    url =db.Column(db.VARCHAR(100), nullable=False)        
+    name = db.Column(db.VARCHAR(100), nullable=False)
+
+    def __str__(self):
+        return (
+            f'id: {self.id},'
+            f'url: {self.url},'
+            f'name:{self.name} '
+        )    
         
 class RecomendationPresent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -199,6 +203,13 @@ class TutorialesForm(FlaskForm):
 class UrlsForm(FlaskForm):
     url = StringField('url', validators=[DataRequired()])
     guardar = SubmitField('guardar')
+
+
+#forms Documents
+class DocumentsForm(FlaskForm):
+    url = StringField('url', validators=[DataRequired()])
+    name = StringField('name', validators=[DataRequired()])
+    guardar = SubmitField('guardar')
     
 #forms recom
 class PresentationForm(FlaskForm):
@@ -220,6 +231,11 @@ def tutoriales():
 def fondos():
     url_fondos = Urlfondos.query.order_by('id')
     return render_template('fondos.html', url_fondos=url_fondos)
+
+@app.route('/documentos')
+def documentos():
+    docsurl = Documentsurl.query.order_by('id')
+    return render_template('documentos.html', docsurl = docsurl)
 
 @app.route("/sugerencias", methods=['GET', 'POST'])
 def sugerencias():
@@ -313,11 +329,6 @@ def eliminar_tutorial(id):
     db.session.commit()
     return redirect(url_for('admintutoriales'))
 
-#listar, agregar y eliminar fondos
-def allowed_image(filename):
-    return '.' in filename and \
-        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 @app.route('/admin/fondos', methods=['GET', 'POST'])
 @login_required
 def adminfondos():
@@ -340,6 +351,32 @@ def defeletefondos(id):
     db.session.commit()
     return redirect(url_for('adminfondos'))    
 
+
+#Documents_admin
+@app.route('/admin/admindocs', methods=['GET', 'POST'])
+@login_required
+def admindocumentos():
+    docsurl = Documentsurl.query.order_by('id')
+    docs = Documentsurl()
+    DocumentForm = DocumentsForm(obj=docs)
+    if request.method == 'POST':
+        if DocumentForm.validate_on_submit():
+            DocumentForm.populate_obj(docs)
+            db.session.add(docs)
+            db.session.commit()
+            return redirect(url_for('admindocumentos'))
+    return render_template('admin/admin_documents.html', docsurl = docsurl, form = DocumentForm)
+
+
+@app.route('/admin/eliminardoc/<int:id>')
+@login_required
+def deletedocument(id):
+    docsurl = Documentsurl.query.get_or_404(id)
+    db.session.delete(docsurl)
+    db.session.commit()
+    return redirect(url_for('admindocumentos'))
+
+#sugerencias
 @app.route('/admin/sugerencias')
 @login_required
 def adminsugerencias():
@@ -353,6 +390,7 @@ def paginanoencontrada(error):
 
 #Login 
 @app.route('/admin/users', methods=['GET', 'POST'])
+@login_required
 def adminusers():
     userslists = User.query.order_by('id')
     form = RegisterForm()
@@ -380,7 +418,6 @@ def login():
         if user and bcrypt.check_password_hash(user.password.encode('utf8'), form.password.data):
                 flash("you login!")
                 login_user(user)
-                session.permanent = True
                 return redirect(url_for('admin'))
         else:
             flash('Invalid Username and Password')

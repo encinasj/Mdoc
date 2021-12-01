@@ -37,6 +37,18 @@
   </div>
 {% endblock presentaciones %}
 
+
+{% block documentos %}
+  <div class="links">
+    <div class="icon">
+      <i class="fas fa-folder-open"></i>
+    </div>
+    <a href="{{ url_for('admindocumentos')}}">
+      <span>Documentos</span>
+    </a>
+  </div>
+{% endblock documentos %}
+
 {% block usuarios %}
   <div class="links">
     <div class="icon">

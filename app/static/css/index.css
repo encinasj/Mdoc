@@ -46,11 +46,11 @@ body {
 }
 
 #suggest{
-    height: 900px;
+    height: 800px;
 }
 
 #suggest1{
-  height: 988px;
+  height: 900px;
 }
 
 
@@ -294,7 +294,7 @@ body {
   border-radius: 1px;
   display: inline-block;
   height: 200px;
-  margin: 1rem;
+  margin: .1rem;
   position: relative;
   width: 350px;
 }
@@ -312,18 +312,6 @@ body {
 /*======================
     Dark mode
 =======================*/
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 .container .btn {
