@@ -53,7 +53,7 @@ if ENV == 'dev':
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:phyla@127.0.0.1:5432/mdoc'
 else:
     app.debug = False
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://qvwbtqyblaxsbp:06d6378d72b9088edd1e8b88797ffe6ddd02a634b95fa4abe91925bdd5cd27dc@ec2-54-204-148-110.compute-1.amazonaws.com:5432/dbno3c6rrs95vc'
+    app.config['SQLALCHEMY_DATABASE_URI'] = ''
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
